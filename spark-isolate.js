@@ -52,6 +52,7 @@ if (Meteor.isClient) {
 
     var annotatedHtml = renderAnnotations(buildAnnotations);
 
+    logWithColor("Custom Annotations", "blue");
     logWithColor("1st Step: Annotate Html:", "green");
     console.log(annotatedHtml);
 
@@ -70,8 +71,10 @@ if (Meteor.isClient) {
 
   function printTemplateAnnotations () {
     var annotatedHtml = renderAnnotations(Template.greetingButton);
+
+    logWithColor("Template Annotations", "blue");
     console.log(annotatedHtml);
   }
 
-  Meteor.startup(printTemplateAnnotations);
+  Meteor.startup(printSampleAnnotations);
 }
