@@ -68,5 +68,10 @@ if (Meteor.isClient) {
     document.body.appendChild(frag);
   }
 
-  Meteor.startup(printSampleAnnotations);
+  function printTemplateAnnotations () {
+    var annotatedHtml = renderAnnotations(Template.greetingButton);
+    console.log(annotatedHtml);
+  }
+
+  Meteor.startup(printTemplateAnnotations);
 }
