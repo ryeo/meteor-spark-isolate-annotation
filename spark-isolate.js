@@ -48,12 +48,12 @@ if (Meteor.isClient) {
     };
 
     var template = function () {
-      return Spark.isolate(function () {
-        return htmlFunc();
-      });
+      return Spark.isolate(htmlFunc);
     };
 
+    //printAnnotations(template);
     renderTemplateToBody(template);
+
   }
 
   Meteor.startup(renderWithIsolateAnnotation);
