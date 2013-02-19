@@ -1,5 +1,9 @@
 if (Meteor.isClient) {
 
+  function logWithColor (msg, color) {
+    console.log("%c" + msg, "color:" + color + ";font-weight: bold;");
+  }
+
   function renderAnnotations (fn) {
     var r = new Spark._Renderer;
     return Spark._currentRenderer.withValue(r, fn);
@@ -38,7 +42,7 @@ if (Meteor.isClient) {
   }
 
   function printSampleAnnotations () {
-    var htmlFunc = function () { return "<div>Hello</div>" };
+    var htmlFunc = function () { return "<h1>I'm in the DOM!</h1>" };
 
     var buildAnnotations = function () {
       return secondAnnotation (function () {
@@ -48,16 +52,20 @@ if (Meteor.isClient) {
 
     var annotatedHtml = renderAnnotations(buildAnnotations);
 
-    console.log("1st Step: Annotate Html:");
+    logWithColor("1st Step: Annotate Html:", "green");
     console.log(annotatedHtml);
 
     console.log("");
-    console.log("2nd Step: Materialize Html:");
+    logWithColor("2nd Step: Materialize Html:", "darkorange");
     var frag = Spark.render(buildAnnotations);
 
     console.log("");
-    console.log("3rd Step: Return Document Fragment:");
+    logWithColor("3rd Step: Return Document Fragment:", "purple");
     console.log(frag);
+
+    console.log("");
+    logWithColor("4th Step: Append Fragment to DOM", "black");
+    document.body.appendChild(frag);
   }
 
   Meteor.startup(printSampleAnnotations);
