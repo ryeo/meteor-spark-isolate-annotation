@@ -9,69 +9,52 @@ if (Meteor.isClient) {
     return Spark._currentRenderer.withValue(r, fn);
   }
 
-  function firstAnnotation (htmlFunc) {
-    var renderer = Spark._currentRenderer.get();
-
-    if (!renderer) return htmlFunc();
-
-    var materialize = function (range) {
-      console.log("materialized first annotation");
-    };
-
-    return renderer.annotate(
-      htmlFunc(),
-      "first-annotation",
-      materialize
-    );
+  function printAnnotations (fn) {
+    var annotatedHtml = renderAnnotations(fn);
+    logWithColor("Annotated Html: ", "black");
+    console.log(annotatedHtml);
   }
 
-  function secondAnnotation (htmlFunc) {
-    var renderer = Spark._currentRenderer.get();
-
-    if (!renderer) return htmlFunc();
-
-    var materialize = function (range) {
-      console.log("materialized second annotation");
-    };
-
-    return renderer.annotate(
-      htmlFunc(),
-      "second-annotation",
-      materialize
-    );
+  function renderTemplateToBody (template) {
+    document.body.appendChild(Spark.render(template));
   }
 
-  function printSampleAnnotations () {
-    var htmlFunc = function () { return "<h1>I'm in the DOM!</h1>" };
+  /* reactive data source that invalidates contexts when value changes */
+  var ReactiveData = {
+    _value: "Chris",
 
-    var buildAnnotations = function () {
-      return secondAnnotation (function () {
-        return firstAnnotation(htmlFunc);
+    _contexts: new Meteor.deps._ContextSet,
+
+    get: function () {
+      this._contexts.addCurrentContext();
+      return this._value;
+    },
+
+    set: function (value) {
+      if (this._value !== value) {
+        this._value = value;
+        this._contexts.invalidateAll();
+      }
+    }
+  };
+
+  function renderWithIsolateAnnotation () {
+    var htmlFunc = function () {
+      /* this is reactive! */
+      var data = ReactiveData.get();
+
+      /* now return html */
+      return "<h1>" + data + "</h1>";
+    };
+
+    var template = function () {
+      return Spark.isolate(function () {
+        return htmlFunc();
       });
     };
 
-    var annotatedHtml = renderAnnotations(buildAnnotations);
-
-    logWithColor("1st Step: Annotate Html:", "green");
-    console.log(annotatedHtml);
-
-    console.log("");
-    logWithColor("2nd Step: Materialize Html:", "darkorange");
-    var frag = Spark.render(buildAnnotations);
-
-    console.log("");
-    logWithColor("3rd Step: Return Document Fragment:", "purple");
-    console.log(frag);
-
-    console.log("");
-    logWithColor("4th Step: Append Fragment to DOM", "black");
-    document.body.appendChild(frag);
+    renderTemplateToBody(template);
   }
 
-  function printTemplateAnnotations () {
-    var annotatedHtml = renderAnnotations(Template.greetingButton);
-    console.log(annotatedHtml);
-  }
-
-  Meteor.startup(printTemplateAnnotations);
+  Meteor.startup(renderWithIsolateAnnotation);
 }
