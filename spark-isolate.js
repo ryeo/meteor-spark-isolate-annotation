@@ -21,7 +21,7 @@ if (Meteor.isClient) {
 
   /* reactive data source that invalidates contexts when value changes */
   var ReactiveData = {
-    _value: "Chris",
+    _value: "EventedMind",
 
     _contexts: new Meteor.deps._ContextSet,
 
